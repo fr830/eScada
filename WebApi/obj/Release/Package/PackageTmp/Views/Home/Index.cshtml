@@ -1,0 +1,67 @@
+﻿<div id="body">
+    <section class="content-wrapper main-content clear-fix">
+        <div>
+            <h2>Bijlegger</h2>
+            <input type="button" value="Start" onclick="bijleggerStart();" />
+            <p id="bijlegger" />
+            
+             <h2>Robot</h2>
+            <input type="text" id="robotPalletId" size="5" /> <br />
+            <input type="text" id="robotPattern" size="5" />
+            <input type="button" value="Start" onclick="robotStart();" />
+            <p id="robot" />
+
+            <h2>Pallet</h2>
+            <input type="text" id="palletId" size="5" />
+            <input type="button" value="Search" onclick="palletByID();" />
+            <p id="pallet" />
+        </div>
+    </section>
+</div>
+
+@section scripts {
+<script>
+    var apiPalletUrl    = 'api/pallet';
+    var apiBijleggerUrl = 'api/bijlegger';
+    var apiRobotUrl     = 'api/robot';
+
+    function formatItem(item) {
+        return '<b>PalletID:</b> ' + item.id + ' <b>Pattern:</b> ' + item.pattern + ' <b>ChangePattern:</b>  ' + item.changePattern;
+    }
+    
+    function palletByID() {
+        var id = $('#palletId').val();
+        $.getJSON(apiPalletUrl + '/GetPallet?palletId=' + id)
+            .done(function (data) {
+                $('#pallet').html(formatItem(data));
+                console.log(data)
+            })
+            .fail(function (jqXHR, textStatus, err) {
+                $('#pallet').text('Error: ' + err);
+            });
+    }
+    function robotStart() {
+        var id      = $('#robotPalletId').val();
+        //var pattern = $.parseJSON($('#robotPattern').val());
+        //console.log(pattern);
+        var pattern = "{1,1}";
+        $.post(apiRobotUrl + '/Start?palletId=' + id, pattern)
+            .done(function (data) {
+                $('#robot').text(data);
+                console.log(data)
+            })
+            .fail(function (jqXHR, textStatus, err) {
+                $('#robot').text('Error: ' + err);
+            });
+    }
+    function bijleggerStart() {
+        $.getJSON(apiBijleggerUrl + '/start')
+            .done(function (data) {
+                $('#bijlegger').text('PalletID: ' + data);
+            })
+            .fail(function (jqXHR, textStatus, err) {
+                $('#bijlegger').text('Error: ' + err);
+            });
+    }
+</script>
+}
